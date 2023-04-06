@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             incrementScore()
         }
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.getBoolean(GAME_STARTED)) {
             score = savedInstanceState.getInt(SCORE_KEY)
             timeLeft = savedInstanceState.getInt(TIME_LEFT_KEY)
             restoreGame()
@@ -47,10 +47,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         outState.putInt(SCORE_KEY, score);
         outState.putInt(TIME_LEFT_KEY, timeLeft)
+        outState.putBoolean(GAME_STARTED, gameStarted)
         countDownTimer.cancel()
         Log.d(TAG, "onSaveInstanceState: Saving Score: $score & Time, Left: $timeLeft")
     }
@@ -81,6 +82,9 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
     private fun incrementScore() {
+        if(!gameStarted) {
+            startGame()
+        }
         score++
         val newScore = getString(R.string.your_score, score)
         gameScoreTextView.text = newScore
@@ -148,5 +152,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val SCORE_KEY = "SCORE_KEY"
         private const val TIME_LEFT_KEY = "TIME_LEFT_KEY"
+        private const val GAME_STARTED = "GAME_STARTED"
     }
 }
